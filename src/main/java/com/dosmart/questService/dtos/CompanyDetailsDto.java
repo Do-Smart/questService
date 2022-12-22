@@ -1,18 +1,12 @@
-package com.dosmart.questService.model;
+package com.dosmart.questService.dtos;
 
-import com.dosmart.questService.dtos.HrDetail;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 import java.util.Map;
 
 @Data
-@Document
-public class CompanyDetails {
-    @Id
-    private String id;
+public class CompanyDetailsDto {
     private String companyName;
     private String CTC;
     private List<String> location;
