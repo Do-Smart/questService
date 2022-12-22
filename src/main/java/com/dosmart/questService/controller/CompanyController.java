@@ -3,12 +3,10 @@ package com.dosmart.questService.controller;
 import com.dosmart.questService.dtos.BaseResponse;
 import com.dosmart.questService.model.CompanyDetails;
 import com.dosmart.questService.services.BaseService;
+import com.dosmart.questService.utils.TokenValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
@@ -19,10 +17,14 @@ public class CompanyController {
     @Autowired
     BaseService<CompanyDetails> baseService;
 
+    @Autowired
+    TokenValidator tokenValidator;
+
     @PostMapping("/new/save")
-    public BaseResponse<CompanyDetails> saveNewCompany(@RequestBody CompanyDetails companyDetails)
+    public BaseResponse<CompanyDetails> saveNewCompany(@RequestBody CompanyDetails companyDetails, @RequestHeader("Authorization") String token)
     {
         try {
+            tokenValidator.validateByToken(token);
             CompanyDetails details = baseService.save(companyDetails);
             if (Objects.nonNull(details)) {
                 return new BaseResponse<>("Added Successfully", HttpStatus.OK.value(), true, "", details);
