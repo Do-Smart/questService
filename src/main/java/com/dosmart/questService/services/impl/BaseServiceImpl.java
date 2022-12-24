@@ -4,6 +4,7 @@ import com.dosmart.questService.dtos.CompanyDetailsDto;
 import com.dosmart.questService.model.CompanyDetails;
 import com.dosmart.questService.repository.CompanyRepository;
 import com.dosmart.questService.services.BaseService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +37,17 @@ public class BaseServiceImpl implements BaseService<CompanyDetails> {
             companyRepository.delete(optionalCompanyDetails.get());
         }
         return optionalCompanyDetails.get();
+    }
+
+    @Override
+    public CompanyDetails modify(String companyName, String location,CompanyDetails companyDetails) {
+        Optional<CompanyDetails> optionalCompanyDetails = companyRepository.findByCompanyNameAndLocation(companyName,location);
+        if(optionalCompanyDetails.isPresent())
+        {
+            companyRepository.delete(optionalCompanyDetails.get());
+            BeanUtils.copyProperties(companyDetails,optionalCompanyDetails.get());
+            return companyRepository.save(optionalCompanyDetails.get());
+        }
+        return null;
     }
 }
