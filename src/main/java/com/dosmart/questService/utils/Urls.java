@@ -6,4 +6,5 @@ public interface Urls {
      String SAVE_COMPANY = "/new/save";
      String DELETE_COMPANY = "/delete/";
      String MODIFY = "/modify/";
+     String LIST_ALL_COMPANIES = "/list/all";
 }

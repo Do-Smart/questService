@@ -1,5 +1,9 @@
 package com.dosmart.questService.services;
 
-public interface CompanyService {
+import com.dosmart.questService.model.CompanyDetails;
 
+import java.util.List;
+
+public interface CompanyService {
+    List<CompanyDetails> fetchAllCompanies();
 }
