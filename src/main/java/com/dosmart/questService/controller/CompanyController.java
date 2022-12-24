@@ -59,6 +59,23 @@ public class CompanyController {
             return new BaseResponse<>("Error occurred",HttpStatus.INTERNAL_SERVER_ERROR.value(), false,exception.getMessage(),null);
         }
     }
+    @PutMapping(MODIFY + "{companyName}/{location}")
+    public BaseResponse<CompanyDetails> modifyCompany(@PathVariable("companyName") String companyName, @PathVariable("location") String location, @RequestHeader(AUTHORIZATION) String token, @RequestBody CompanyDetails companyDetails)
+    {
+        try {
+            tokenValidator.validateByToken(token);
+            CompanyDetails details = baseService.modify(companyName,location,companyDetails);
+            if(Objects.nonNull(details))
+            {
+                return new BaseResponse<>("Modified",HttpStatus.OK.value(), true,"",details);
+            }
+            return new BaseResponse<>("Modification unSuccessful", HttpStatus.NO_CONTENT.value(), false, "Company Not found", null);
+        }
+        catch (Exception exception)
+        {
+            return new BaseResponse<>("Error occurred",HttpStatus.INTERNAL_SERVER_ERROR.value(), false,exception.getMessage(),null);
+        }
+    }
 
 
 
