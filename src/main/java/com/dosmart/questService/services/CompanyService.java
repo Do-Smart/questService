@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface CompanyService {
     List<CompanyDetails> fetchAllCompanies();
+    List<CompanyDetails> fetchByHighLpa();
 }
