@@ -17,12 +17,24 @@ public class BaseServiceImpl implements BaseService<CompanyDetails> {
 
     @Override
     public CompanyDetails save(CompanyDetails details) {
-        Optional<CompanyDetails> optionalCompanyDetails = companyRepository.findByCompanyName(details.getCompanyName());
+        details.setLocation(details.getLocation().substring(0,1).toUpperCase() + details.getLocation().substring(1).toLowerCase());
+        details.setCompanyName(details.getCompanyName().substring(0,1).toUpperCase() + details.getCompanyName().substring(1).toLowerCase());
+        Optional<CompanyDetails> optionalCompanyDetails = companyRepository.findByCompanyNameAndLocation(details.getCompanyName(),details.getLocation());
         if(optionalCompanyDetails.isPresent())
         {
             return null;
         }
         return companyRepository.save(details);
 
+    }
+
+    @Override
+    public CompanyDetails delete(String companyName, String location) {
+        Optional<CompanyDetails> optionalCompanyDetails = companyRepository.findByCompanyNameAndLocation(companyName,location);
+        if(optionalCompanyDetails.isPresent())
+        {
+            companyRepository.delete(optionalCompanyDetails.get());
+        }
+        return optionalCompanyDetails.get();
     }
 }

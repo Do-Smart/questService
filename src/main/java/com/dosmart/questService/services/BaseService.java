@@ -5,4 +5,5 @@ import com.dosmart.questService.model.CompanyDetails;
 
 public interface BaseService<T> {
     T save(CompanyDetails details);
+    T delete(String companyName, String location);
 }

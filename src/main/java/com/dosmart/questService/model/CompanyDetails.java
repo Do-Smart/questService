@@ -15,7 +15,7 @@ public class CompanyDetails {
     private String id;
     private String companyName;
     private String CTC;
-    private List<String> location;
+    private String location;
     private HrDetail hrDetail;
     private HrDetail alternativeHrDetail;
     private double stipend;

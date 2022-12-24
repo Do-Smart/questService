@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
+import static com.dosmart.questService.utils.Constants.AUTHORIZATION;
+import static com.dosmart.questService.utils.Urls.*;
+
 @RestController
-@RequestMapping("/company")
+@RequestMapping(COMPANY_URL)
 public class CompanyController {
 
     @Autowired
@@ -20,7 +23,7 @@ public class CompanyController {
     @Autowired
     TokenValidator tokenValidator;
 
-    @PostMapping("/new/save")
+    @PostMapping(SAVE_COMPANY)
     public BaseResponse<CompanyDetails> saveNewCompany(@RequestBody CompanyDetails companyDetails, @RequestHeader("Authorization") String token)
     {
         try {
@@ -37,5 +40,26 @@ public class CompanyController {
             return new BaseResponse<>(exception.getLocalizedMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value(), false, exception.getMessage(),null);
         }
     }
+
+    @DeleteMapping(DELETE_COMPANY + "{companyName}/{location}")
+    public BaseResponse<CompanyDetails> deleteCompany(@PathVariable("companyName") String companyName, @PathVariable("location") String location, @RequestHeader(AUTHORIZATION) String token)
+    {
+        try{
+            tokenValidator.validateByToken(token);
+            CompanyDetails details = baseService.delete(companyName,location);
+            if(Objects.nonNull(details))
+            {
+                return new BaseResponse<>("Deleted Successfully",HttpStatus.OK.value(), true,"",details);
+            }
+            return new BaseResponse<>("Delete unSuccessful",HttpStatus.NO_CONTENT.value(), false,"Company not found",null);
+
+        }
+        catch (Exception exception)
+        {
+            return new BaseResponse<>("Error occurred",HttpStatus.INTERNAL_SERVER_ERROR.value(), false,exception.getMessage(),null);
+        }
+    }
+
+
 
 }
