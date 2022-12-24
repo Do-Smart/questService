@@ -93,9 +93,20 @@ public class CompanyController {
         {
             return new BaseResponse<>(exception.getCause().toString(),HttpStatus.INTERNAL_SERVER_ERROR.value(), false,exception.getMessage(),null);
         }
-
     }
+    @GetMapping("/list/high-lpa/all")
+    public BaseResponse<List<CompanyDetails>> getHighLpaCompany(@RequestHeader(AUTHORIZATION) String token)
+    {
+        try{
+            tokenValidator.validateByToken(token);
+            return new BaseResponse<>("Companies in High LPA Order", HttpStatus.OK.value(), true,"",companyService.fetchByHighLpa());
+        }
+        catch (Exception exception)
+        {
+            return new BaseResponse<>(exception.getCause().toString(),HttpStatus.INTERNAL_SERVER_ERROR.value(), false,exception.getMessage(),null);
 
+        }
+    }
 
 
 }

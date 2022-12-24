@@ -14,7 +14,7 @@ public class CompanyDetails {
     @Id
     private String id;
     private String companyName;
-    private String CTC;
+    private long CTC;
     private String location;
     private HrDetail hrDetail;
     private HrDetail alternativeHrDetail;
