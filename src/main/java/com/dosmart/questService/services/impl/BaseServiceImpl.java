@@ -1,6 +1,6 @@
 package com.dosmart.questService.services.impl;
 
-import com.dosmart.questService.dtos.CompanyDetailsDto;
+import com.dosmart.questService.dtos.AdminDetails;
 import com.dosmart.questService.model.CompanyDetails;
 import com.dosmart.questService.repository.CompanyRepository;
 import com.dosmart.questService.services.BaseService;
@@ -8,6 +8,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -25,6 +27,7 @@ public class BaseServiceImpl implements BaseService<CompanyDetails> {
         {
             return null;
         }
+        details.setEntryModifiedDate(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date()));
         return companyRepository.save(details);
 
     }
@@ -32,20 +35,23 @@ public class BaseServiceImpl implements BaseService<CompanyDetails> {
     @Override
     public CompanyDetails delete(String companyName, String location) {
         Optional<CompanyDetails> optionalCompanyDetails = companyRepository.findByCompanyNameAndLocation(companyName,location);
+        CompanyDetails companyDetails = null;
         if(optionalCompanyDetails.isPresent())
         {
-            companyRepository.delete(optionalCompanyDetails.get());
+            companyDetails = optionalCompanyDetails.get();
+            companyRepository.delete(companyDetails);
         }
-        return optionalCompanyDetails.get();
+        return companyDetails;
     }
 
     @Override
-    public CompanyDetails modify(String companyName, String location,CompanyDetails companyDetails) {
+    public CompanyDetails modify(String companyName, String location, CompanyDetails companyDetails, AdminDetails adminDetails) {
         Optional<CompanyDetails> optionalCompanyDetails = companyRepository.findByCompanyNameAndLocation(companyName,location);
-        if(optionalCompanyDetails.isPresent())
-        {
+        if(optionalCompanyDetails.isPresent()){
             companyRepository.delete(optionalCompanyDetails.get());
             BeanUtils.copyProperties(companyDetails,optionalCompanyDetails.get());
+            optionalCompanyDetails.get().setEntryAddedBy(adminDetails);
+            optionalCompanyDetails.get().setEntryModifiedDate(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date()));
             return companyRepository.save(optionalCompanyDetails.get());
         }
         return null;

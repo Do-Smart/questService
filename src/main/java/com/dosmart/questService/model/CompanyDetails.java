@@ -1,11 +1,11 @@
 package com.dosmart.questService.model;
 
+import com.dosmart.questService.dtos.AdminDetails;
 import com.dosmart.questService.dtos.HrDetail;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
 import java.util.Map;
 
 @Data
@@ -22,4 +22,6 @@ public class CompanyDetails {
     private String yearOfVisit;
     private String monthOfVisit;
     private Map<Integer,Integer> studentHiredYearWise;
+    private AdminDetails entryAddedBy;
+    private String entryModifiedDate;
 }

@@ -1,5 +1,6 @@
 package com.dosmart.questService.controller;
 
+import com.dosmart.questService.dtos.AdminDetails;
 import com.dosmart.questService.dtos.BaseResponse;
 import com.dosmart.questService.model.CompanyDetails;
 import com.dosmart.questService.services.BaseService;
@@ -29,11 +30,14 @@ public class CompanyController {
     @Autowired
     TokenValidator tokenValidator;
 
+    //todo: Create Own exception to handle all kind of error.
     @PostMapping(SAVE_COMPANY)
     public BaseResponse<CompanyDetails> saveNewCompany(@RequestBody CompanyDetails companyDetails, @RequestHeader("Authorization") String token)
     {
         try {
-            tokenValidator.validateByToken(token);
+            Integer id = tokenValidator.validateByToken(token);
+            AdminDetails adminDetails = tokenValidator.getUserById(token,id);
+            companyDetails.setEntryAddedBy(adminDetails);
             CompanyDetails details = baseService.save(companyDetails);
             if (Objects.nonNull(details)) {
                 return new BaseResponse<>("Added Successfully", HttpStatus.OK.value(), true, "", details);
@@ -43,7 +47,11 @@ public class CompanyController {
         }
         catch (Exception exception)
         {
-            return new BaseResponse<>(exception.getCause().toString(),HttpStatus.INTERNAL_SERVER_ERROR.value(), false, exception.getMessage(),null);
+            BaseResponse<CompanyDetails> baseResponse = new BaseResponse<>(exception.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value(), false, exception.getMessage(), null);
+            if (baseResponse.getError().contains("401")) {
+                baseResponse.setCode(401);
+            }
+            return baseResponse;
         }
     }
 
@@ -62,24 +70,32 @@ public class CompanyController {
         }
         catch (Exception exception)
         {
-            return new BaseResponse<>(exception.getCause().toString(),HttpStatus.INTERNAL_SERVER_ERROR.value(), false,exception.getMessage(),null);
+            BaseResponse<CompanyDetails> baseResponse = new BaseResponse<>(exception.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value(), false, exception.getMessage(), null);
+            if (baseResponse.getError().contains("401")) {
+                baseResponse.setCode(401);
+            }
+            return baseResponse;
         }
     }
     @PutMapping(MODIFY + "{companyName}/{location}")
     public BaseResponse<CompanyDetails> modifyCompany(@PathVariable("companyName") String companyName, @PathVariable("location") String location, @RequestHeader(AUTHORIZATION) String token, @RequestBody CompanyDetails companyDetails)
     {
         try {
-            tokenValidator.validateByToken(token);
-            CompanyDetails details = baseService.modify(companyName,location,companyDetails);
+            Integer id = tokenValidator.validateByToken(token);
+            AdminDetails adminDetails = tokenValidator.getUserById(token,id);
+            CompanyDetails details = baseService.modify(companyName,location,companyDetails,adminDetails);
             if(Objects.nonNull(details))
             {
                 return new BaseResponse<>("Modified",HttpStatus.OK.value(), true,"",details);
             }
             return new BaseResponse<>("Modification unSuccessful", HttpStatus.NO_CONTENT.value(), false, "Company Not found", null);
         }
-        catch (Exception exception)
-        {
-            return new BaseResponse<>(exception.getCause().toString(),HttpStatus.INTERNAL_SERVER_ERROR.value(), false,exception.getMessage(),null);
+        catch (Exception exception) {
+            BaseResponse<CompanyDetails> baseResponse = new BaseResponse<>(exception.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value(), false, exception.getMessage(), null);
+            if (baseResponse.getError().contains("401")) {
+                baseResponse.setCode(401);
+            }
+            return baseResponse;
         }
     }
     @GetMapping(LIST_ALL_COMPANIES)
@@ -91,7 +107,11 @@ public class CompanyController {
         }
         catch (Exception exception)
         {
-            return new BaseResponse<>(exception.getCause().toString(),HttpStatus.INTERNAL_SERVER_ERROR.value(), false,exception.getMessage(),null);
+            BaseResponse<List<CompanyDetails>> baseResponse = new BaseResponse<>(exception.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value(), false, exception.getMessage(), null);
+            if (baseResponse.getError().contains("401")) {
+                baseResponse.setCode(401);
+            }
+            return baseResponse;
         }
     }
     @GetMapping("/list/high-lpa/all")
@@ -103,8 +123,11 @@ public class CompanyController {
         }
         catch (Exception exception)
         {
-            return new BaseResponse<>(exception.getCause().toString(),HttpStatus.INTERNAL_SERVER_ERROR.value(), false,exception.getMessage(),null);
-
+            BaseResponse<List<CompanyDetails>> baseResponse = new BaseResponse<>(exception.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value(), false, exception.getMessage(), null);
+            if (baseResponse.getError().contains("401")) {
+                baseResponse.setCode(401);
+            }
+            return baseResponse;
         }
     }
 
