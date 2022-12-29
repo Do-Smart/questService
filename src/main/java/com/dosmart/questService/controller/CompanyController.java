@@ -37,12 +37,17 @@ public class CompanyController {
         try {
             Integer id = tokenValidator.validateByToken(token);
             AdminDetails adminDetails = tokenValidator.getUserById(token,id);
-            companyDetails.setEntryAddedBy(adminDetails);
-            CompanyDetails details = baseService.save(companyDetails);
-            if (Objects.nonNull(details)) {
-                return new BaseResponse<>("Added Successfully", HttpStatus.OK.value(), true, "", details);
-            } else {
-                return new BaseResponse<>("Already Exists", HttpStatus.ALREADY_REPORTED.value(), false, "", null);
+            if(adminDetails.isAuthority()) {
+                companyDetails.setEntryAddedBy(adminDetails);
+                CompanyDetails details = baseService.save(companyDetails);
+                if (Objects.nonNull(details)) {
+                    return new BaseResponse<>("Added Successfully", HttpStatus.OK.value(), true, "", details);
+                } else {
+                    return new BaseResponse<>("Already Exists", HttpStatus.ALREADY_REPORTED.value(), false, "", null);
+                }
+            }
+            else{
+                return new BaseResponse<>("Not Authorized User",HttpStatus.NON_AUTHORITATIVE_INFORMATION.value(), false,"User not authorized",null);
             }
         }
         catch (Exception exception)
@@ -59,14 +64,18 @@ public class CompanyController {
     public BaseResponse<CompanyDetails> deleteCompany(@PathVariable("companyName") String companyName, @PathVariable("location") String location, @RequestHeader(AUTHORIZATION) String token)
     {
         try{
-            tokenValidator.validateByToken(token);
-            CompanyDetails details = baseService.delete(companyName,location);
-            if(Objects.nonNull(details))
-            {
-                return new BaseResponse<>("Deleted Successfully",HttpStatus.OK.value(), true,"",details);
+            Integer id = tokenValidator.validateByToken(token);
+            AdminDetails adminDetails = tokenValidator.getUserById(token,id);
+            if(adminDetails.isAuthority()) {
+                CompanyDetails details = baseService.delete(companyName, location);
+                if (Objects.nonNull(details)) {
+                    return new BaseResponse<>("Deleted Successfully", HttpStatus.OK.value(), true, "", details);
+                }
+                return new BaseResponse<>("Delete unSuccessful", HttpStatus.NO_CONTENT.value(), false, "Company not found", null);
             }
-            return new BaseResponse<>("Delete unSuccessful",HttpStatus.NO_CONTENT.value(), false,"Company not found",null);
-
+            else{
+                return new BaseResponse<>("Not Authorized User",HttpStatus.NON_AUTHORITATIVE_INFORMATION.value(), false,"User not authorized",null);
+            }
         }
         catch (Exception exception)
         {
@@ -83,12 +92,16 @@ public class CompanyController {
         try {
             Integer id = tokenValidator.validateByToken(token);
             AdminDetails adminDetails = tokenValidator.getUserById(token,id);
-            CompanyDetails details = baseService.modify(companyName,location,companyDetails,adminDetails);
-            if(Objects.nonNull(details))
-            {
-                return new BaseResponse<>("Modified",HttpStatus.OK.value(), true,"",details);
+            if(adminDetails.isAuthority()) {
+                CompanyDetails details = baseService.modify(companyName, location, companyDetails, adminDetails);
+                if (Objects.nonNull(details)) {
+                    return new BaseResponse<>("Modified", HttpStatus.OK.value(), true, "", details);
+                }
+                return new BaseResponse<>("Modification unSuccessful", HttpStatus.NO_CONTENT.value(), false, "Company Not found", null);
             }
-            return new BaseResponse<>("Modification unSuccessful", HttpStatus.NO_CONTENT.value(), false, "Company Not found", null);
+            else{
+                return new BaseResponse<>("Not Authorized User",HttpStatus.NON_AUTHORITATIVE_INFORMATION.value(), false,"User not authorized",null);
+            }
         }
         catch (Exception exception) {
             BaseResponse<CompanyDetails> baseResponse = new BaseResponse<>(exception.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value(), false, exception.getMessage(), null);
