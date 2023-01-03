@@ -22,6 +22,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public List<CompanyDetails> fetchHighRecruitment() {
+        List<CompanyDetails> companyDetailsList = companyRepository.findAll(Sort.by(Sort.Direction.DESC,"totalRecruitment"));
+        return companyDetailsList;
+    }
+
+    @Override
     public List<CompanyDetails> fetchByHighLpa() {
         List<CompanyDetails> companyDetailsList = companyRepository.findAll(Sort.by(Sort.Direction.DESC, "CTC"));
         return companyDetailsList;
