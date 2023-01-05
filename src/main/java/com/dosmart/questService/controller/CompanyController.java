@@ -143,6 +143,20 @@ public class CompanyController {
             return baseResponse;
         }
     }
-
-
+    @GetMapping("/list/high-recruitment/all")
+    public BaseResponse<List<CompanyDetails>> getHighRecruitmentCompany(@RequestHeader(AUTHORIZATION) String token)
+    {
+        try{
+            tokenValidator.validateByToken(token);
+            return new BaseResponse<>("Companies in High recruitment order",HttpStatus.OK.value(),true, "",companyService.fetchHighRecruitment());
+        }
+        catch (Exception exception)
+        {
+            BaseResponse<List<CompanyDetails>> baseResponse = new BaseResponse<>(exception.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value(), false, exception.getMessage(), null);
+            if (baseResponse.getError().contains("401")) {
+                baseResponse.setCode(401);
+            }
+            return baseResponse;
+        }
+    }
 }
